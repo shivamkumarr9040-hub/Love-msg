@@ -5,8 +5,8 @@
 // Google ke liye: Google Cloud me OAuth client banao, uski ID/Secret Supabase
 // Authentication > Providers > Google me dalo. Tabhi Google button kaam karega.
 // IMPORTANT: yahan sirf anon key dalni hai. service_role key KABHI code me mat dalna.
-const SUPABASE_URL = "YOUR_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+const SUPABASE_URL = "https://lhiedimpadoacapydhik.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_E2oq-uiIqjkcXJZOLuCQtg_hNfoLmb_";
 
 const loginError = document.getElementById("loginError");
 const setupHint = document.getElementById("loginSetupHint");
