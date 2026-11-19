@@ -135,3 +135,127 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none!important}
 #signupView .step-label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-top:14px}
 #otpInput{letter-spacing:.5em;font-size:20px;text-align:center}
 .link-btn{display:block;margin:18px auto 0;background:none;border:0;color:var(--muted);font-size:14px;cursor:pointer;text-decoration:underline}
+
+/* ============ SURPRISE AFTER LOGIN ============ */
+#heartCanvas {
+  display: block;
+  margin: 12px auto;
+  width: 100%;
+  max-width: 300px;
+  height: 300px;
+  background: #fff;
+  border: 2px solid #ffc2d1;
+  border-radius: 16px;
+  touch-action: none;
+  cursor: crosshair;
+}
+#playArea {
+  position: relative;
+  min-height: 380px;
+  margin: 12px 0;
+  border-radius: 16px;
+  background: #fff0f3;
+  overflow: hidden;
+}
+#yesBtn {
+  position: absolute;
+  left: 16px;
+  top: 24px;
+  width: auto;
+  padding: 14px 28px;
+}
+#noBtn {
+  position: absolute;
+  left: calc(100% - 96px);
+  top: 24px;
+  width: auto;
+  padding: 14px 28px;
+  transition: left 0.35s ease, top 0.35s ease;
+}
+#dogWrap {
+  animation: dogDrop 0.9s ease both;
+}
+@keyframes dogDrop {
+  0% { transform: translateY(-140px) rotate(-6deg); opacity: 0; }
+  60% { transform: translateY(8px) rotate(2deg); opacity: 1; }
+  100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+}
+#dogTail {
+  transform-origin: 168px 65px;
+  animation: tailWag 0.5s ease-in-out infinite alternate;
+}
+@keyframes tailWag {
+  from { transform: rotate(-18deg); }
+  to { transform: rotate(18deg); }
+}
+#answerInput {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 12px 0;
+  padding: 12px;
+  border: 2px solid #ffc2d1;
+  border-radius: 12px;
+  font: inherit;
+  resize: vertical;
+}
+
+/* ============ THE END ============ */
+.creator-credit {
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #c98a9b;
+  margin: 18px 0 0;
+}
+.end-heart {
+  font-size: 72px;
+  margin: 8px 0 0;
+  animation: heartbeat 1.1s ease-in-out infinite;
+}
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.25); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.2); }
+  60% { transform: scale(1); }
+}
+.end-hearts {
+  position: relative;
+  height: 28px;
+}
+.end-hearts span {
+  position: absolute;
+  left: 50%;
+  font-size: 18px;
+  opacity: 0;
+  animation: floatUp 2.4s ease-in infinite;
+}
+.end-hearts span:nth-child(1) { margin-left: -70px; animation-delay: 0s; }
+.end-hearts span:nth-child(2) { margin-left: -35px; animation-delay: 0.5s; }
+.end-hearts span:nth-child(3) { margin-left: 0; animation-delay: 1s; }
+.end-hearts span:nth-child(4) { margin-left: 35px; animation-delay: 1.4s; }
+.end-hearts span:nth-child(5) { margin-left: 70px; animation-delay: 1.8s; }
+@keyframes floatUp {
+  0% { transform: translateY(24px) scale(0.7); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateY(-46px) scale(1.15); opacity: 0; }
+}
+.for-aashi {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin: 10px 0;
+  background: linear-gradient(120deg, #e91e63, #ff4d6d, #ff8fab);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.for-aashi span {
+  display: inline-block;
+  animation: letterPop 0.5s ease both;
+}
+@keyframes letterPop {
+  0% { transform: translateY(18px) scale(0.5); opacity: 0; }
+  70% { transform: translateY(-4px) scale(1.12); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}

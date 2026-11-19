@@ -74,6 +74,7 @@ function showSignedIn(user) {
   if (loginStage) loginStage.hidden = true;
   if (welcomeStage) welcomeStage.hidden = false;
   if (successEmail) successEmail.textContent = user && user.email ? user.email : "";
+  resetSurprise();
 }
 function showLogin() {
   if (welcomeStage) welcomeStage.hidden = true;
@@ -344,6 +345,205 @@ if (logoutBtn) {
 if (passwordInput) {
   passwordInput.addEventListener("keydown", function (e) {
     if (e.key === "Enter" && loginBtn) loginBtn.click();
+  });
+}
+
+// ============ SURPRISE AFTER LOGIN ============
+// Step 1: draw a heart on the canvas. Unlock is coverage-based:
+// the strokes must spread across the canvas (left + right, top +
+// bottom) and cover enough of it — a single dot or line is not a heart.
+const drawStage = document.getElementById("drawStage");
+const questionStage = document.getElementById("questionStage");
+const answerStage = document.getElementById("answerStage");
+const heartCanvas = document.getElementById("heartCanvas");
+const drawHint = document.getElementById("drawHint");
+const clearDrawBtn = document.getElementById("clearDrawBtn");
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const playArea = document.getElementById("playArea");
+const writeAnswerBtn = document.getElementById("writeAnswerBtn");
+const answerTitle = document.getElementById("answerTitle");
+const answerIntro = document.getElementById("answerIntro");
+const answerInput = document.getElementById("answerInput");
+const sendAnswerBtn = document.getElementById("sendAnswerBtn");
+const answerSaved = document.getElementById("answerSaved");
+const endStage = document.getElementById("endStage");
+const endIntro = document.getElementById("endIntro");
+const forAashi = document.getElementById("forAashi");
+
+let drawing = false;
+let drawPoints = [];
+let noDodges = 0;
+const MAX_NO_DODGES = 4;
+
+function resetSurprise() {
+  if (drawStage) drawStage.hidden = false;
+  if (questionStage) questionStage.hidden = true;
+  if (answerStage) answerStage.hidden = true;
+  if (endStage) endStage.hidden = true;
+  if (yesBtn) yesBtn.hidden = false;
+  if (writeAnswerBtn) writeAnswerBtn.hidden = false;
+  if (answerSaved) answerSaved.hidden = true;
+  if (answerInput) answerInput.value = "";
+  noDodges = 0;
+  if (noBtn) {
+    noBtn.hidden = false;
+    noBtn.style.transform = "";
+    noBtn.style.left = "calc(100% - 96px)";
+    noBtn.style.top = "24px";
+  }
+  clearCanvas();
+}
+function clearCanvas() {
+  drawPoints = [];
+  if (!heartCanvas) return;
+  const ctx = heartCanvas.getContext("2d");
+  ctx.clearRect(0, 0, heartCanvas.width, heartCanvas.height);
+  if (drawHint) drawHint.textContent = "";
+}
+function canvasPos(e) {
+  const rect = heartCanvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (heartCanvas.width / rect.width);
+  const y = (e.clientY - rect.top) * (heartCanvas.height / rect.height);
+  return { x: x, y: y };
+}
+function heartIsDrawn() {
+  if (drawPoints.length < 40) return false;
+  let minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9;
+  const cells = new Set();
+  for (const pt of drawPoints) {
+    minX = Math.min(minX, pt.x); maxX = Math.max(maxX, pt.x);
+    minY = Math.min(minY, pt.y); maxY = Math.max(maxY, pt.y);
+    cells.add(Math.floor(pt.x / 60) + ":" + Math.floor(pt.y / 60));
+  }
+  // Spread left-right and top-bottom, covering a good part of the canvas.
+  return (maxX - minX) >= 140 && (maxY - minY) >= 120 && cells.size >= 8;
+}
+function openQuestion() {
+  if (drawStage) drawStage.hidden = true;
+  if (questionStage) questionStage.hidden = false;
+  if (answerStage) answerStage.hidden = true;
+  if (endStage) endStage.hidden = true;
+}
+function openEnd(intro) {
+  if (drawStage) drawStage.hidden = true;
+  if (questionStage) questionStage.hidden = true;
+  if (answerStage) answerStage.hidden = true;
+  if (endStage) endStage.hidden = false;
+  if (endIntro) endIntro.textContent = intro;
+  // Replay the letter animation for "FOR Aashi" every time it opens.
+  if (forAashi) {
+    const text = "FOR Aashi";
+    forAashi.innerHTML = "";
+    for (let i = 0; i < text.length; i++) {
+      const span = document.createElement("span");
+      span.textContent = text[i] === " " ? "\u00a0" : text[i];
+      span.style.animationDelay = (i * 0.08) + "s";
+      forAashi.appendChild(span);
+    }
+  }
+}
+function openAnswer(intro) {
+  if (questionStage) questionStage.hidden = true;
+  if (drawStage) drawStage.hidden = true;
+  if (endStage) endStage.hidden = true;
+  if (answerStage) answerStage.hidden = false;
+  if (answerIntro) answerIntro.textContent = intro;
+  if (answerInput) answerInput.focus();
+}
+if (heartCanvas) {
+  const ctx = heartCanvas.getContext("2d");
+  ctx.strokeStyle = "#e91e63";
+  ctx.lineWidth = 5;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  let last = null;
+  heartCanvas.addEventListener("pointerdown", function (e) {
+    e.preventDefault();
+    drawing = true;
+    last = canvasPos(e);
+    drawPoints.push(last);
+    heartCanvas.setPointerCapture(e.pointerId);
+  });
+  heartCanvas.addEventListener("pointermove", function (e) {
+    if (!drawing) return;
+    const pos = canvasPos(e);
+    ctx.beginPath();
+    ctx.moveTo(last.x, last.y);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    drawPoints.push(pos);
+    last = pos;
+  });
+  function endDraw() {
+    if (!drawing) return;
+    drawing = false;
+    if (heartIsDrawn()) openQuestion();
+    else if (drawHint) drawHint.textContent = "Almost — draw a bigger heart.";
+  }
+  heartCanvas.addEventListener("pointerup", endDraw);
+  heartCanvas.addEventListener("pointercancel", endDraw);
+}
+if (clearDrawBtn) {
+  clearDrawBtn.addEventListener("click", clearCanvas);
+}
+// Step 2: the No button runs away inside the play area — smooth, and
+// it never leaves the frame. After 4 dodges it disappears for good.
+function dodgeNo() {
+  if (!noBtn || !playArea) return;
+  if (noDodges >= MAX_NO_DODGES) return;
+  noDodges += 1;
+  if (noDodges >= MAX_NO_DODGES) {
+    noBtn.hidden = true;
+    if (yesBtn) yesBtn.hidden = true;
+    if (writeAnswerBtn) writeAnswerBtn.hidden = true;
+    openEnd("No ran away — and yes, this was all for you.");
+    return;
+  }
+  const area = playArea.getBoundingClientRect();
+  const btn = noBtn.getBoundingClientRect();
+  const maxX = Math.max(0, area.width - btn.width - 16);
+  const maxY = Math.max(0, area.height - btn.height - 16);
+  noBtn.style.transform = "none";
+  noBtn.style.left = (8 + Math.random() * maxX) + "px";
+  noBtn.style.top = (8 + Math.random() * maxY) + "px";
+}
+if (noBtn) {
+  noBtn.addEventListener("pointerdown", function (e) {
+    e.preventDefault();
+    dodgeNo();
+  });
+  noBtn.addEventListener("pointerenter", function () {
+    dodgeNo();
+  });
+}
+if (yesBtn) {
+  yesBtn.addEventListener("click", function () {
+    openAnswer("You said yes! Now tell me in your words too.");
+  });
+}
+if (writeAnswerBtn) {
+  writeAnswerBtn.addEventListener("click", function () {
+    openAnswer("Write your answer — in your own words.");
+  });
+}
+// Step 3: the dog drops in with the answer box. The answer is saved
+// on this device only (localStorage) — there is no server inbox for it.
+if (sendAnswerBtn) {
+  sendAnswerBtn.addEventListener("click", function () {
+    const text = answerInput ? answerInput.value.trim() : "";
+    if (!text) {
+      if (answerIntro) answerIntro.textContent = "Write something first — even one line.";
+      return;
+    }
+    try {
+      localStorage.setItem("love-msg-answer", text);
+    } catch (e) {}
+    if (answerSaved) answerSaved.hidden = false;
+    sendAnswerBtn.disabled = true;
+    setTimeout(function () {
+      openEnd("Your answer is saved ❤️");
+    }, 1200);
   });
 }
 
