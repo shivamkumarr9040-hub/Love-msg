@@ -15,8 +15,8 @@
   <section id="loginStage" aria-label="Sign in">
     <div class="hero">
       <p class="eyebrow">LOVE-MSG</p>
-      <h1>Welcome back.</h1>
-      <p class="lede">A little Valentine&rsquo;s surprise —<br>sign in to open it.</p>
+      <h1>Welcome cutie.</h1>
+      <p class="lede">A little surprise —<br>sign in to open it.</p>
       <ul class="points">
         <li><b>01</b> Sign in, the surprise opens</li>
         <li><b>02</b> Your account, only yours</li>
@@ -59,18 +59,21 @@
                 Sign in with Google
               </button>
               <p class="phone-foot">Protected by Supabase Auth</p>
-
-              <div id="loginSuccess" hidden>
-                <p class="success-tick" aria-hidden="true">✓</p>
-                <h2>You&rsquo;re signed in</h2>
-                <p class="phone-sub">Welcome back, <b id="successEmail"></b></p>
-                <p class="phone-sub">Happy Valentine&rsquo;s — made for someone special.</p>
-                <button class="btn-dark" id="logoutBtn" type="button">Logout</button>
-              </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ AFTER LOGIN: FULL PAGE (not inside the phone) ============ -->
+  <section id="welcomeStage" aria-label="Signed in" hidden>
+    <div class="welcome-card">
+      <p class="success-tick" aria-hidden="true">✓</p>
+      <p class="eyebrow">LOVE-MSG</p>
+      <h1>You&rsquo;re signed in</h1>
+      <p class="lede">Welcome back, <b id="successEmail"></b></p>
+      <button class="btn-dark welcome-btn" id="logoutBtn" type="button">Logout</button>
     </div>
   </section>
 

@@ -1,12 +1,12 @@
-// Love-msg v2 — LOGIN PAGE ONLY (Valentine gift for Shivam)
+// Love-msg v2 — LOGIN PAGE ONLY (for Shivam)
 // No dashboard, no websites, no LOVE.exe copy, no flying hearts.
 // STEP 1 (Shivam ko karna hai): Supabase project banao, Authentication > Email on karo,
 // Settings > API se Project URL aur anon key copy karke neeche dalo.
 // Google ke liye: Google Cloud me OAuth client banao, uski ID/Secret Supabase
 // Authentication > Providers > Google me dalo. Tabhi Google button kaam karega.
 // IMPORTANT: yahan sirf anon key dalni hai. service_role key KABHI code me mat dalna.
-const SUPABASE_URL = "https://lhiedimpadoacapydhik.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_E2oq-uiIqjkcXJZOLuCQtg_hNfoLmb_";
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
 const loginError = document.getElementById("loginError");
 const setupHint = document.getElementById("loginSetupHint");
@@ -16,8 +16,8 @@ const googleBtn = document.getElementById("googleBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const emailInput = document.getElementById("loginEmail");
 const passwordInput = document.getElementById("loginPassword");
-const phoneBody = document.querySelector(".phone-body");
-const successBox = document.getElementById("loginSuccess");
+const loginStage = document.getElementById("loginStage");
+const welcomeStage = document.getElementById("welcomeStage");
 const successEmail = document.getElementById("successEmail");
 
 const isConfigured =
@@ -43,13 +43,15 @@ function setBusy(on) {
   });
 }
 function showSignedIn(user) {
-  if (phoneBody) phoneBody.classList.add("signed-in");
-  if (successBox) successBox.hidden = false;
+  // Full page opens — phone stage hides completely, so phone users are not
+  // stuck reading inside a tiny phone frame.
+  if (loginStage) loginStage.hidden = true;
+  if (welcomeStage) welcomeStage.hidden = false;
   if (successEmail) successEmail.textContent = user && user.email ? user.email : "";
 }
 function showLogin() {
-  if (phoneBody) phoneBody.classList.remove("signed-in");
-  if (successBox) successBox.hidden = true;
+  if (welcomeStage) welcomeStage.hidden = true;
+  if (loginStage) loginStage.hidden = false;
 }
 function notConfiguredMsg() {
   return "Supabase setup pending hai — app.js me apna Project URL aur anon key dalo, phir dobara try karo. Google ke liye pehle Supabase me Google provider on karna padega.";
