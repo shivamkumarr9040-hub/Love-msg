@@ -130,3 +130,8 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none!important}
 .welcome-card h1{font-size:clamp(38px,6vw,60px);letter-spacing:-2px;line-height:1.05;margin:10px 0 14px}
 .welcome-card .lede{font-size:18px}
 .welcome-btn{max-width:280px;margin-top:26px}
+
+/* ---------- Create Account + OTP: INSIDE the phone ---------- */
+#signupView .step-label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-top:14px}
+#otpInput{letter-spacing:.5em;font-size:20px;text-align:center}
+.link-btn{display:block;margin:18px auto 0;background:none;border:0;color:var(--muted);font-size:14px;cursor:pointer;text-decoration:underline}

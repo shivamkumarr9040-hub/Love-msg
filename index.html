@@ -39,6 +39,7 @@
             </div>
 
             <div class="phone-body">
+              <div id="loginView">
               <p class="phone-logo">Love-msg</p>
               <h2>Sign in</h2>
               <p class="phone-sub">Welcome back. Enter your details below.</p>
@@ -59,6 +60,36 @@
                 Sign in with Google
               </button>
               <p class="phone-foot">Protected by Supabase Auth</p>
+              </div><!-- /loginView -->
+
+              <!-- Create Account + OTP — INSIDE the phone, not a separate page -->
+              <div id="signupView" hidden>
+                <p class="phone-logo">Love-msg</p>
+                <h2>Create account</h2>
+                <p class="phone-sub">Two steps — OTP aayega, confirm karo, account ban jayega.</p>
+                <p class="form-error" id="signupError" role="alert" aria-live="polite"></p>
+
+                <div id="signupStep1">
+                  <p class="step-label">Step 1 — Your details</p>
+                  <label for="signupEmail">Email</label>
+                  <input id="signupEmail" type="email" placeholder="you@example.com" autocomplete="email">
+                  <label for="signupPassword">Password</label>
+                  <input id="signupPassword" type="password" placeholder="At least 6 characters" autocomplete="new-password">
+                  <button class="btn-dark" id="sendOtpBtn" type="button">Send OTP</button>
+                </div>
+
+                <div id="signupStep2" hidden>
+                  <p class="step-label">Step 2 — Confirm your email</p>
+                  <p class="phone-sub">6-digit OTP <b id="otpEmailLabel"></b> par bheja gaya hai.</p>
+                  <label for="otpInput">OTP</label>
+                  <input id="otpInput" type="text" inputmode="numeric" maxlength="6" placeholder="123456" autocomplete="one-time-code">
+                  <button class="btn-dark" id="verifyOtpBtn" type="button">Verify OTP &amp; Create Account</button>
+                  <button class="btn-light" id="resendOtpBtn" type="button">Resend OTP</button>
+                </div>
+
+                <button class="link-btn" id="backToLoginBtn" type="button">← Back to Sign in</button>
+                <p class="phone-foot">Protected by Supabase Auth</p>
+              </div><!-- /signupView -->
             </div>
           </div>
         </div>
