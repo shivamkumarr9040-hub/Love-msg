@@ -34,9 +34,9 @@ body{
 .points b{font-size:12px;color:var(--accent2);letter-spacing:1px}
 
 /* iPhone — smooth entrance, then a slow gentle float */
-.phone-wrap{position:relative;display:grid;place-items:center;animation:phoneIn 1.15s var(--spring) .15s both}
+.phone-wrap{position:relative;display:grid;place-items:center;animation:phoneIn 1.4s var(--spring) .35s both}
 @keyframes phoneIn{
-  from{opacity:0;transform:translateY(110px) rotate(2.5deg) scale(.96)}
+  from{opacity:0;transform:translateY(90vh) rotate(2deg) scale(.96)}
   to{opacity:1;transform:translateY(0) rotate(0deg) scale(1)}
 }
 /* No infinite float on the phone itself: a moving button is hard to tap and looks restless. Entrance spring only; hover gives a tiny lift. */
