@@ -9,8 +9,8 @@
 //   4. Google sign-in needs the Google provider enabled in Supabase first.
 // Signup uses signInWithOtp, which sends a 6-digit code (not a link).
 // The password is set after the OTP is verified, so password login works too.
-const SUPABASE_URL = "YOUR_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+const SUPABASE_URL = "https://lhiedimpadoacapydhik.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_E2oq-uiIqjkcXJZOLuCQtg_hNfoLmb_";
 
 const loginError = document.getElementById("loginError");
 const setupHint = document.getElementById("loginSetupHint");
