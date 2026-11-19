@@ -4,13 +4,18 @@
 // Settings > API se Project URL aur anon key copy karke neeche dalo.
 // Google ke liye: Google Cloud me OAuth client banao, uski ID/Secret Supabase
 // Authentication > Providers > Google me dalo. Tabhi Google button kaam karega.
-// OTP ke liye: Supabase > Authentication > Providers > Email me "Confirm email"
-// ON rakho, aur email bhejne ke liye SMTP sahi hona chahiye (default Supabase
-// email, ya apna Gmail SMTP). Agar Confirm email OFF hai to OTP nahi aayega
-// aur account turant ban jayega — OTP chahiye to Confirm email ON karo.
+// OTP ke liye: signup signInWithOtp se hota hai — Supabase 6-digit OTP code
+// bhejta hai (link nahi), jo "Magic Link" email template se aata hai.
+// Us template me bhi "Your OTP is: {{ .Token }}" likhna padega
+// (Authentication > Email Templates > Magic Link).
+// Email bhejne ke liye SMTP sahi hona chahiye (default Supabase email,
+// ya apna Gmail SMTP, username = poora Gmail address).
+// TEMPLATE BHI CHAHIYE: default signup mail me link aata hai, 6-digit code nahi.
+// Supabase > Authentication > Email Templates > Confirm signup me
+// "Your code: {{ .Token }}" add karo, tabhi mail me code aayega.
 // IMPORTANT: yahan sirf anon key dalni hai. service_role key KABHI code me mat dalna.
-const SUPABASE_URL = "https://lhiedimpadoacapydhik.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_E2oq-uiIqjkcXJZOLuCQtg_hNfoLmb_";
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
 const loginError = document.getElementById("loginError");
 const setupHint = document.getElementById("loginSetupHint");
@@ -196,7 +201,8 @@ if (backToLoginBtn) {
 }
 
 // STEP 1 — email + password, then Send OTP. Supabase sends a 6-digit OTP
-// to the email (only if Confirm email is ON in Supabase).
+// CODE to the email via signInWithOtp (link nahi). Password OTP verify
+// ke baad set hota hai, taaki baad me password se bhi login ho sake.
 if (sendOtpBtn) {
   sendOtpBtn.addEventListener("click", async function () {
     if (busy) return;
@@ -216,15 +222,13 @@ if (sendOtpBtn) {
     }
     setBusy(true);
     try {
-      const { data, error } = await supabaseClient.auth.signUp({
+      // OTP-only signup: signUp link bhejta hai, signInWithOtp CODE bhejta hai.
+      const { error } = await supabaseClient.auth.signInWithOtp({
         email: creds.email,
-        password: creds.password,
+        options: { shouldCreateUser: true },
       });
       if (error) {
         showSignupError(error.message);
-      } else if (data && data.session) {
-        // Confirm email OFF hai — OTP nahi aayega, account turant ban gaya.
-        showSignedIn(data.session.user);
       } else {
         // OTP email par gaya — Step 2 kholo.
         showOtpStep(creds.email);
@@ -260,11 +264,20 @@ if (verifyOtpBtn) {
       const { data, error } = await supabaseClient.auth.verifyOtp({
         email: pendingSignupEmail,
         token: token,
-        type: "signup",
+        type: "email",
       });
       if (error) showSignupError(error.message);
-      else if (data && data.session) showSignedIn(data.session.user);
-      else showSignupError("OTP verify nahi hua — dobara try karo.");
+      else if (data && data.session) {
+        // OTP se account ban gaya + login ho gaya. Ab password set karo
+        // taaki baad me password se bhi Sign in ho sake.
+        const creds = readSignupCreds();
+        if (creds.password && creds.password.length >= 6) {
+          try {
+            await supabaseClient.auth.updateUser({ password: creds.password });
+          } catch (e) {}
+        }
+        showSignedIn(data.session.user);
+      } else showSignupError("OTP verify nahi hua — dobara try karo.");
     } catch (e) {
       showSignupError("OTP verify nahi hua — dobara try karo.");
     } finally {
@@ -283,9 +296,9 @@ if (resendOtpBtn) {
     }
     setBusy(true);
     try {
-      const { error } = await supabaseClient.auth.resend({
-        type: "signup",
+      const { error } = await supabaseClient.auth.signInWithOtp({
         email: pendingSignupEmail,
+        options: { shouldCreateUser: true },
       });
       if (error) showSignupError(error.message);
       else showSignupError("OTP dobara bhej diya — email check karo.");
