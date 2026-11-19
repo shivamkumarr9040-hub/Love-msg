@@ -1,5 +1,5 @@
-/* Love-msg v2 — LOVE THEME. Soft rose/pink, red hearts accents, romantic premium.
-   Motion: one smooth spring entrance, staggered fields. No flying hearts. */
+/* Love-msg v2 — love theme. Soft rose/pink with red accents.
+   Motion: one smooth spring entrance, staggered fields. */
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#fff0f3; --panel:#ffffff; --panel2:#ffe4ec;
@@ -40,7 +40,7 @@ body{
   from{opacity:0;transform:translateY(90vh) rotate(2deg) scale(.96)}
   to{opacity:1;transform:translateY(0) rotate(0deg) scale(1)}
 }
-/* No infinite float on the phone itself: a moving button is hard to tap and looks restless. Entrance spring only; hover gives a tiny lift. */
+/* No infinite float on the phone: a moving button is hard to tap. Entrance spring only; hover gives a tiny lift. */
 .phone{transition:transform .35s var(--spring)}
 .phone:hover{transform:translateY(-4px)}
 .phone-shadow{

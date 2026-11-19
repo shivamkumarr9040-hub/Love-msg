@@ -1,21 +1,16 @@
-// Love-msg v2 — LOGIN PAGE ONLY (for Shivam)
-// No dashboard, no websites, no LOVE.exe copy, no flying hearts.
-// STEP 1 (Shivam ko karna hai): Supabase project banao, Authentication > Email on karo,
-// Settings > API se Project URL aur anon key copy karke neeche dalo.
-// Google ke liye: Google Cloud me OAuth client banao, uski ID/Secret Supabase
-// Authentication > Providers > Google me dalo. Tabhi Google button kaam karega.
-// OTP ke liye: signup signInWithOtp se hota hai — Supabase 6-digit OTP code
-// bhejta hai (link nahi), jo "Magic Link" email template se aata hai.
-// Us template me bhi "Your OTP is: {{ .Token }}" likhna padega
-// (Authentication > Email Templates > Magic Link).
-// Email bhejne ke liye SMTP sahi hona chahiye (default Supabase email,
-// ya apna Gmail SMTP, username = poora Gmail address).
-// TEMPLATE BHI CHAHIYE: default signup mail me link aata hai, 6-digit code nahi.
-// Supabase > Authentication > Email Templates > Confirm signup me
-// "Your code: {{ .Token }}" add karo, tabhi mail me code aayega.
-// IMPORTANT: yahan sirf anon key dalni hai. service_role key KABHI code me mat dalna.
-const SUPABASE_URL = "https://lhiedimpadoacapydhik.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_E2oq-uiIqjkcXJZOLuCQtg_hNfoLmb_";
+// Love-msg — login with Supabase Auth (email OTP + password + Google).
+// Setup:
+//   1. Create a Supabase project, enable the Email provider.
+//   2. Email templates (Authentication > Email Templates):
+//      Magic Link and Confirm sign up must contain
+//      "Your OTP is: {{ .Token }}" so the email carries a 6-digit code.
+//   3. Put the Project URL and anon key in SUPABASE_URL / SUPABASE_ANON_KEY.
+//      Only the anon key goes here. Never put the service_role key in code.
+//   4. Google sign-in needs the Google provider enabled in Supabase first.
+// Signup uses signInWithOtp, which sends a 6-digit code (not a link).
+// The password is set after the OTP is verified, so password login works too.
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
 const loginError = document.getElementById("loginError");
 const setupHint = document.getElementById("loginSetupHint");
@@ -31,7 +26,7 @@ const signupView = document.getElementById("signupView");
 const welcomeStage = document.getElementById("welcomeStage");
 const successEmail = document.getElementById("successEmail");
 
-// Signup page (separate page, OTP flow)
+// Signup + OTP flow
 const signupEmailInput = document.getElementById("signupEmail");
 const signupPasswordInput = document.getElementById("signupPassword");
 const otpInput = document.getElementById("otpInput");
@@ -87,7 +82,7 @@ function showLogin() {
   if (signupView) signupView.hidden = true;
 }
 function showSignup() {
-  // Create Account + OTP stays INSIDE the phone — not a separate page.
+  // Create Account + OTP stays inside the phone, not a separate page.
   if (welcomeStage) welcomeStage.hidden = true;
   if (loginStage) loginStage.hidden = false;
   if (loginView) loginView.hidden = true;
@@ -106,7 +101,7 @@ function showOtpStep(email) {
   if (otpInput) otpInput.focus();
 }
 function notConfiguredMsg() {
-  return "Supabase setup pending hai — app.js me apna Project URL aur anon key dalo, phir dobara try karo. Google ke liye pehle Supabase me Google provider on karna padega.";
+  return "Supabase setup pending — add the Project URL and anon key in app.js first. For Google, enable the Google provider in Supabase.";
 }
 
 async function init() {
@@ -114,7 +109,7 @@ async function init() {
     if (setupHint) {
       setupHint.hidden = false;
       setupHint.textContent =
-        "Setup pending: app.js me SUPABASE_URL aur SUPABASE_ANON_KEY dalo. Tab tak login kaam nahi karega — ye fake login nahi hai.";
+        "Setup pending: add SUPABASE_URL and SUPABASE_ANON_KEY in app.js. Login will not work until then.";
     }
     showLogin();
     return;
@@ -126,7 +121,7 @@ async function init() {
     supabaseClient = mod.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   } catch (e) {
     showError(
-      "Supabase load nahi hua — internet / CDN check karo aur page refresh karo."
+      "Supabase failed to load — check your connection and refresh the page."
     );
     showLogin();
     return;
@@ -179,7 +174,7 @@ if (loginBtn) {
       if (error) showError(error.message);
       else if (data && data.session) showSignedIn(data.session.user);
     } catch (e) {
-      showError("Login nahi hua — dobara try karo.");
+      showError("Login failed — please try again.");
     } finally {
       setBusy(false);
     }
@@ -200,9 +195,9 @@ if (backToLoginBtn) {
   });
 }
 
-// STEP 1 — email + password, then Send OTP. Supabase sends a 6-digit OTP
-// CODE to the email via signInWithOtp (link nahi). Password OTP verify
-// ke baad set hota hai, taaki baad me password se bhi login ho sake.
+// STEP 1 — email + password, then Send OTP. Supabase sends a 6-digit
+// OTP code via signInWithOtp. The password is set after OTP verification,
+// so password login works afterwards.
 if (sendOtpBtn) {
   sendOtpBtn.addEventListener("click", async function () {
     if (busy) return;
@@ -217,12 +212,12 @@ if (sendOtpBtn) {
       return;
     }
     if (creds.password.length < 6) {
-      showSignupError("Password kam se kam 6 characters ka rakho.");
+      showSignupError("Password must be at least 6 characters.");
       return;
     }
     setBusy(true);
     try {
-      // OTP-only signup: signUp link bhejta hai, signInWithOtp CODE bhejta hai.
+      // OTP signup: signInWithOtp sends a code; signUp sends a link.
       const { error } = await supabaseClient.auth.signInWithOtp({
         email: creds.email,
         options: { shouldCreateUser: true },
@@ -230,18 +225,18 @@ if (sendOtpBtn) {
       if (error) {
         showSignupError(error.message);
       } else {
-        // OTP email par gaya — Step 2 kholo.
+        // OTP sent — open Step 2.
         showOtpStep(creds.email);
       }
     } catch (e) {
-      showSignupError("OTP nahi bheja gaya — dobara try karo.");
+      showSignupError("OTP was not sent — please try again.");
     } finally {
       setBusy(false);
     }
   });
 }
 
-// STEP 2 — OTP dalo, verify karo, tab account create hota hai.
+// STEP 2 — enter the OTP, verify it, and the account is created.
 if (verifyOtpBtn) {
   verifyOtpBtn.addEventListener("click", async function () {
     if (busy) return;
@@ -252,11 +247,11 @@ if (verifyOtpBtn) {
     }
     const token = otpInput ? otpInput.value.trim() : "";
     if (!pendingSignupEmail) {
-      showSignupError("Pehle Step 1 me email dalke Send OTP dabao.");
+      showSignupError("Enter your email in Step 1 and tap Send OTP first.");
       return;
     }
     if (!/^\d{6}$/.test(token)) {
-      showSignupError("6-digit OTP dalo — jo email par aaya hai.");
+      showSignupError("Enter the 6-digit OTP sent to your email.");
       return;
     }
     setBusy(true);
@@ -268,8 +263,8 @@ if (verifyOtpBtn) {
       });
       if (error) showSignupError(error.message);
       else if (data && data.session) {
-        // OTP se account ban gaya + login ho gaya. Ab password set karo
-        // taaki baad me password se bhi Sign in ho sake.
+        // Account created and signed in. Now set the password
+        // so password sign-in works later.
         const creds = readSignupCreds();
         if (creds.password && creds.password.length >= 6) {
           try {
@@ -277,9 +272,9 @@ if (verifyOtpBtn) {
           } catch (e) {}
         }
         showSignedIn(data.session.user);
-      } else showSignupError("OTP verify nahi hua — dobara try karo.");
+      } else showSignupError("OTP verification failed — please try again.");
     } catch (e) {
-      showSignupError("OTP verify nahi hua — dobara try karo.");
+      showSignupError("OTP verification failed — please try again.");
     } finally {
       setBusy(false);
     }
@@ -291,7 +286,7 @@ if (resendOtpBtn) {
     if (busy) return;
     clearSignupError();
     if (!isConfigured || !supabaseClient || !pendingSignupEmail) {
-      showSignupError("Pehle Step 1 me email dalke Send OTP dabao.");
+      showSignupError("Enter your email in Step 1 and tap Send OTP first.");
       return;
     }
     setBusy(true);
@@ -301,9 +296,9 @@ if (resendOtpBtn) {
         options: { shouldCreateUser: true },
       });
       if (error) showSignupError(error.message);
-      else showSignupError("OTP dobara bhej diya — email check karo.");
+      else showSignupError("OTP sent again — please check your email.");
     } catch (e) {
-      showSignupError("OTP dobara nahi bheja gaya — dobara try karo.");
+      showSignupError("OTP was not sent again — please try again.");
     } finally {
       setBusy(false);
     }
@@ -328,7 +323,7 @@ if (googleBtn) {
       });
       if (error) showError(error.message);
     } catch (e) {
-      showError("Google login nahi khula — dobara try karo.");
+      showError("Google login did not open — please try again.");
     } finally {
       setBusy(false);
     }
