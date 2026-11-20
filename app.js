@@ -367,14 +367,15 @@ const answerIntro = document.getElementById("answerIntro");
 const answerInput = document.getElementById("answerInput");
 const sendAnswerBtn = document.getElementById("sendAnswerBtn");
 const answerSaved = document.getElementById("answerSaved");
+const noHint = document.getElementById("noHint");
 const endStage = document.getElementById("endStage");
 const endIntro = document.getElementById("endIntro");
 const forAashi = document.getElementById("forAashi");
 
 let drawing = false;
 let drawPoints = [];
-let noDodges = 0;
-const MAX_NO_DODGES = 4;
+let noClicks = 0;
+const MAX_NO_CLICKS = 5;
 
 function resetSurprise() {
   if (drawStage) drawStage.hidden = false;
@@ -385,7 +386,8 @@ function resetSurprise() {
   if (writeAnswerBtn) writeAnswerBtn.hidden = false;
   if (answerSaved) answerSaved.hidden = true;
   if (answerInput) answerInput.value = "";
-  noDodges = 0;
+  noClicks = 0;
+  if (noHint) noHint.textContent = "";
   if (noBtn) {
     noBtn.hidden = false;
     noBtn.style.transform = "";
@@ -449,6 +451,13 @@ function openAnswer(intro) {
   if (endStage) endStage.hidden = true;
   if (answerStage) answerStage.hidden = false;
   if (answerIntro) answerIntro.textContent = intro;
+  // The dog runs in from off-screen every time, carrying the letter.
+  const dogWrap = document.getElementById("dogWrap");
+  if (dogWrap) {
+    dogWrap.style.animation = "none";
+    void dogWrap.offsetWidth;
+    dogWrap.style.animation = "";
+  }
   if (answerInput) answerInput.focus();
 }
 if (heartCanvas) {
@@ -487,34 +496,25 @@ if (heartCanvas) {
 if (clearDrawBtn) {
   clearDrawBtn.addEventListener("click", clearCanvas);
 }
-// Step 2: the No button runs away inside the play area — smooth, and
-// it never leaves the frame. After 4 dodges it disappears for good.
-function dodgeNo() {
-  if (!noBtn || !playArea) return;
-  if (noDodges >= MAX_NO_DODGES) return;
-  noDodges += 1;
-  if (noDodges >= MAX_NO_DODGES) {
-    noBtn.hidden = true;
-    if (yesBtn) yesBtn.hidden = true;
-    if (writeAnswerBtn) writeAnswerBtn.hidden = true;
-    openEnd("No ran away — and yes, this was all for you.");
-    return;
-  }
-  const area = playArea.getBoundingClientRect();
-  const btn = noBtn.getBoundingClientRect();
-  const maxX = Math.max(0, area.width - btn.width - 16);
-  const maxY = Math.max(0, area.height - btn.height - 16);
-  noBtn.style.transform = "none";
-  noBtn.style.left = (8 + Math.random() * maxX) + "px";
-  noBtn.style.top = (8 + Math.random() * maxY) + "px";
-}
+// Step 2: the No button stays still — it does not run away.
+// After 5 clicks on No, both Yes and No disappear, and the dog runs
+// in from off-screen carrying the letter to write in.
 if (noBtn) {
-  noBtn.addEventListener("pointerdown", function (e) {
-    e.preventDefault();
-    dodgeNo();
-  });
-  noBtn.addEventListener("pointerenter", function () {
-    dodgeNo();
+  noBtn.addEventListener("click", function () {
+    noClicks += 1;
+    noBtn.classList.remove("shake");
+    void noBtn.offsetWidth;
+    noBtn.classList.add("shake");
+    if (noClicks >= MAX_NO_CLICKS) {
+      noBtn.hidden = true;
+      if (yesBtn) yesBtn.hidden = true;
+      if (writeAnswerBtn) writeAnswerBtn.hidden = true;
+      openAnswer("You said no 5 times! Now tell me in your words.");
+      return;
+    }
+    if (noHint) {
+      noHint.textContent = "No? Are you sure? (" + noClicks + "/" + MAX_NO_CLICKS + ")";
+    }
   });
 }
 if (yesBtn) {

@@ -170,15 +170,25 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none!important}
   top: 24px;
   width: auto;
   padding: 14px 28px;
-  transition: left 0.35s ease, top 0.35s ease;
+}
+#noBtn.shake {
+  animation: noShake 0.3s ease;
+}
+@keyframes noShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }
 #dogWrap {
-  animation: dogDrop 0.9s ease both;
+  animation: dogRun 1.2s ease-out both;
 }
-@keyframes dogDrop {
-  0% { transform: translateY(-140px) rotate(-6deg); opacity: 0; }
-  60% { transform: translateY(8px) rotate(2deg); opacity: 1; }
-  100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+@keyframes dogRun {
+  0% { transform: translateX(-120vw) translateY(0); opacity: 1; }
+  20% { transform: translateX(-80vw) translateY(-12px); }
+  40% { transform: translateX(-40vw) translateY(0); }
+  60% { transform: translateX(-12vw) translateY(-12px); }
+  80% { transform: translateX(-4vw) translateY(0); }
+  100% { transform: translateX(0) translateY(0); opacity: 1; }
 }
 #dogTail {
   transform-origin: 168px 65px;
@@ -258,4 +268,17 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none!important}
   0% { transform: translateY(18px) scale(0.5); opacity: 0; }
   70% { transform: translateY(-4px) scale(1.12); opacity: 1; }
   100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* The answer box is a letter the dog brought */
+#answerStage .letter-card {
+  background: #fffdf5;
+  border: 2px solid #ffc2d1;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(233, 30, 99, 0.12);
+}
+#answerInput {
+  background: repeating-linear-gradient(#fffdf5 0 30px, #ffd6e0 30px 31px);
+  line-height: 31px;
 }

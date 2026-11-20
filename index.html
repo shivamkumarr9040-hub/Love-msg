@@ -121,6 +121,7 @@
           <button class="btn-dark" id="yesBtn" type="button">Yes ❤️</button>
           <button class="btn-light" id="noBtn" type="button">No</button>
         </div>
+        <p class="form-hint" id="noHint"></p>
         <button class="btn-light" id="writeAnswerBtn" type="button">Write my answer</button>
       </div>
 
@@ -141,13 +142,19 @@
             <ellipse cx="100" cy="112" rx="9" ry="7" fill="#3d1220"/>
             <path d="M100 119 Q100 128 92 128 Q100 134 108 128 Q100 128 100 119" fill="#e91e63"/>
             <ellipse cx="100" cy="132" rx="12" ry="8" fill="#ff8fab"/>
+            <g id="dogLetter">
+              <rect x="82" y="138" width="36" height="24" rx="3" fill="#ffffff" stroke="#e91e63" stroke-width="2"/>
+              <path d="M82 141 L100 154 L118 141" fill="none" stroke="#e91e63" stroke-width="2"/>
+            </g>
           </svg>
         </div>
         <h2 id="answerTitle">Your answer</h2>
         <p class="lede" id="answerIntro">Tell me in your words.</p>
-        <textarea id="answerInput" rows="4" placeholder="Write your answer here..."></textarea>
-        <button class="btn-dark" id="sendAnswerBtn" type="button">Send my answer</button>
-        <p class="form-hint" id="answerSaved" hidden>Thank you ❤️ Your answer is saved on this device.</p>
+        <div class="letter-card">
+          <textarea id="answerInput" rows="4" placeholder="Write your answer here..."></textarea>
+          <button class="btn-dark" id="sendAnswerBtn" type="button">Send my answer</button>
+          <p class="form-hint" id="answerSaved" hidden>Thank you ❤️ Your answer is saved on this device.</p>
+        </div>
       </div>
 
       <!-- The End: shown after No runs away 4 times, or after the answer is sent -->
