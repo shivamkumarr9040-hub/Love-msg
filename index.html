@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Love-msg — Sign in</title>
-<meta name="description" content="Love-msg — sign in to manage your websites.">
+<meta name="description" content="Love-msg — a little universe of messages and surprises, made with love. Sign in to open your surprise.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✉️</text></svg>">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -59,6 +59,7 @@
                 <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.5-.3-2.2H12v4.3h6.5c-.1 1.1-.8 2.7-2.4 3.8l3.7 2.9c2.2-2 3.7-5.1 3.7-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.7-2.9c-1 .7-2.4 1.2-4.2 1.2-3.2 0-5.9-2.1-6.8-5.1L1.3 17.2C3.3 21.2 7.3 24 12 24z"/><path fill="#FBBC05" d="M5.2 14.3c-.2-.7-.4-1.5-.4-2.3s.1-1.6.4-2.3L1.3 6.8C.5 8.4 0 10.1 0 12s.5 3.6 1.3 5.2l3.9-2.9z"/><path fill="#EA4335" d="M12 4.7c1.8 0 3 .8 3.7 1.4l3.3-3.2C17.9 1.1 15.2 0 12 0 7.3 0 3.3 2.8 1.3 6.8l3.9 2.9c.9-2.9 3.6-5 6.8-5z"/></svg>
                 Sign in with Google
               </button>
+              <button class="link-btn" id="forgotBtn" type="button">Forgot password?</button>
               <p class="phone-foot">With love, Shivam ❤️</p>
               </div><!-- /loginView -->
 
@@ -90,11 +91,45 @@
                 <button class="link-btn" id="backToLoginBtn" type="button">← Back to Sign in</button>
                 <p class="phone-foot">With love, Shivam ❤️</p>
               </div><!-- /signupView -->
+
+              <!-- Forgot password — INSIDE the phone, not a separate page -->
+              <div id="forgotView" hidden>
+                <p class="phone-logo">Love-msg</p>
+                <h2>Forgot password</h2>
+                <p class="phone-sub">Enter your email — we'll send you a link to set a new password.</p>
+                <p class="form-error" id="forgotError" role="alert" aria-live="polite"></p>
+                <p class="form-hint" id="forgotHint" hidden></p>
+                <label for="forgotEmail">Email</label>
+                <input id="forgotEmail" type="email" placeholder="you@example.com" autocomplete="email">
+                <button class="btn-dark" id="sendResetBtn" type="button">Send reset link</button>
+                <button class="link-btn" id="backToLoginBtn2" type="button">← Back to Sign in</button>
+                <p class="phone-foot">With love, Shivam ❤️</p>
+              </div><!-- /forgotView -->
+
+              <!-- Set a new password — opens from the reset link in the email -->
+              <div id="resetView" hidden>
+                <p class="phone-logo">Love-msg</p>
+                <h2>Set a new password</h2>
+                <p class="phone-sub">Choose a new password for your account.</p>
+                <p class="form-error" id="resetError" role="alert" aria-live="polite"></p>
+                <p class="form-hint" id="resetHint" hidden></p>
+                <label for="newPassword">New password</label>
+                <input id="newPassword" type="password" placeholder="At least 6 characters" autocomplete="new-password">
+                <label for="confirmPassword">Confirm new password</label>
+                <input id="confirmPassword" type="password" placeholder="Repeat your new password" autocomplete="new-password">
+                <button class="btn-dark" id="setPasswordBtn" type="button">Set new password</button>
+                <p class="phone-foot">With love, Shivam ❤️</p>
+              </div><!-- /resetView -->
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <footer class="site-footer">
+      <p>Love-msg is a little universe of messages and surprises, made with love. Sign in with your email or Google to open your surprise — explore a galaxy of secret messages, letters, and a little game, made just for you.</p>
+      <p><a href="privacy-policy.html">Privacy Policy</a> · <a href="mailto:shakyaaman189@gmail.com">Contact</a></p>
+    </footer>
   </section>
 
   <!-- ============ AFTER LOGIN: PHASE 1 — ENTER THE UNIVERSE ============ -->

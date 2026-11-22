@@ -39,6 +39,25 @@ const signupStep2 = document.getElementById("signupStep2");
 const signupError = document.getElementById("signupError");
 const otpEmailLabel = document.getElementById("otpEmailLabel");
 
+// Forgot password + reset password flow
+const forgotBtn = document.getElementById("forgotBtn");
+const forgotView = document.getElementById("forgotView");
+const forgotEmailInput = document.getElementById("forgotEmail");
+const forgotError = document.getElementById("forgotError");
+const forgotHint = document.getElementById("forgotHint");
+const sendResetBtn = document.getElementById("sendResetBtn");
+const backToLoginBtn2 = document.getElementById("backToLoginBtn2");
+const resetView = document.getElementById("resetView");
+const newPasswordInput = document.getElementById("newPassword");
+const confirmPasswordInput = document.getElementById("confirmPassword");
+const setPasswordBtn = document.getElementById("setPasswordBtn");
+const resetError = document.getElementById("resetError");
+const resetHint = document.getElementById("resetHint");
+
+// True when the page was opened from a password-reset email link.
+// Supabase puts type=recovery in the URL hash for those links.
+const isRecovery = window.location.hash.indexOf("type=recovery") !== -1;
+
 const isConfigured =
   SUPABASE_URL &&
   SUPABASE_ANON_KEY &&
@@ -64,7 +83,7 @@ function clearSignupError() {
 }
 function setBusy(on) {
   busy = on;
-  [loginBtn, signupBtn, googleBtn, sendOtpBtn, verifyOtpBtn, resendOtpBtn].forEach(function (b) {
+  [loginBtn, signupBtn, googleBtn, sendOtpBtn, verifyOtpBtn, resendOtpBtn, sendResetBtn, setPasswordBtn].forEach(function (b) {
     if (b) b.disabled = on;
   });
 }
@@ -82,6 +101,32 @@ function showLogin() {
   if (loginStage) loginStage.hidden = false;
   if (loginView) loginView.hidden = false;
   if (signupView) signupView.hidden = true;
+  if (forgotView) forgotView.hidden = true;
+  if (resetView) resetView.hidden = true;
+}
+function showForgot() {
+  // Forgot password stays inside the phone, not a separate page.
+  if (welcomeStage) welcomeStage.hidden = true;
+  if (loginStage) loginStage.hidden = false;
+  if (loginView) loginView.hidden = true;
+  if (signupView) signupView.hidden = true;
+  if (forgotView) forgotView.hidden = false;
+  if (resetView) resetView.hidden = true;
+  if (forgotError) forgotError.textContent = "";
+  if (forgotHint) forgotHint.hidden = true;
+  if (forgotEmailInput) forgotEmailInput.focus();
+}
+function showReset() {
+  // Set-new-password screen, opened from the reset link in the email.
+  if (welcomeStage) welcomeStage.hidden = true;
+  if (loginStage) loginStage.hidden = false;
+  if (loginView) loginView.hidden = true;
+  if (signupView) signupView.hidden = true;
+  if (forgotView) forgotView.hidden = true;
+  if (resetView) resetView.hidden = false;
+  if (resetError) resetError.textContent = "";
+  if (resetHint) resetHint.hidden = true;
+  if (newPasswordInput) newPasswordInput.focus();
 }
 function showSignup() {
   // Create Account + OTP stays inside the phone, not a separate page.
@@ -89,6 +134,8 @@ function showSignup() {
   if (loginStage) loginStage.hidden = false;
   if (loginView) loginView.hidden = true;
   if (signupView) signupView.hidden = false;
+  if (forgotView) forgotView.hidden = true;
+  if (resetView) resetView.hidden = true;
   if (signupStep1) signupStep1.hidden = false;
   if (signupStep2) signupStep2.hidden = true;
   clearSignupError();
@@ -130,12 +177,17 @@ async function init() {
   }
   try {
     const { data } = await supabaseClient.auth.getSession();
-    if (data && data.session && data.session.user) showSignedIn(data.session.user);
+    // A recovery link signs the user in with a recovery session —
+    // show the set-new-password screen instead of the universe.
+    if (isRecovery && data && data.session && data.session.user) showReset();
+    else if (data && data.session && data.session.user) showSignedIn(data.session.user);
     else showLogin();
   } catch (e) {
     showLogin();
   }
   supabaseClient.auth.onAuthStateChange(function (_event, session) {
+    // While the reset screen is open, don't jump into the universe.
+    if (isRecovery) return;
     if (session && session.user) showSignedIn(session.user);
     else showLogin();
   });
@@ -194,6 +246,102 @@ if (signupBtn) {
 if (backToLoginBtn) {
   backToLoginBtn.addEventListener("click", function () {
     showLogin();
+  });
+}
+
+// "Forgot password?" opens the reset-link form inside the phone.
+if (forgotBtn) {
+  forgotBtn.addEventListener("click", function () {
+    clearError();
+    showForgot();
+  });
+}
+
+if (backToLoginBtn2) {
+  backToLoginBtn2.addEventListener("click", function () {
+    showLogin();
+  });
+}
+
+// Send the password-reset email. Supabase sends a link; opening it
+// brings the user back here with type=recovery in the URL.
+if (sendResetBtn) {
+  sendResetBtn.addEventListener("click", async function () {
+    if (busy) return;
+    if (forgotError) forgotError.textContent = "";
+    if (forgotHint) forgotHint.hidden = true;
+    if (!isConfigured || !supabaseClient) {
+      if (forgotError) forgotError.textContent = notConfiguredMsg();
+      return;
+    }
+    const email = forgotEmailInput ? forgotEmailInput.value.trim() : "";
+    if (!email || email.indexOf("@") === -1) {
+      if (forgotError) forgotError.textContent = "Enter a valid email address.";
+      return;
+    }
+    setBusy(true);
+    try {
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + window.location.pathname,
+      });
+      if (error) {
+        if (forgotError) forgotError.textContent = error.message;
+      } else if (forgotHint) {
+        forgotHint.hidden = false;
+        forgotHint.textContent =
+          "Reset link sent to " + email + " — check your inbox (and spam folder).";
+      }
+    } catch (e) {
+      if (forgotError) forgotError.textContent = "Reset link was not sent — please try again.";
+    } finally {
+      setBusy(false);
+    }
+  });
+}
+
+// Set the new password after opening the reset link.
+if (setPasswordBtn) {
+  setPasswordBtn.addEventListener("click", async function () {
+    if (busy) return;
+    if (resetError) resetError.textContent = "";
+    if (resetHint) resetHint.hidden = true;
+    if (!isConfigured || !supabaseClient) {
+      if (resetError) resetError.textContent = notConfiguredMsg();
+      return;
+    }
+    const next = newPasswordInput ? newPasswordInput.value : "";
+    const confirm = confirmPasswordInput ? confirmPasswordInput.value : "";
+    if (!next || next.length < 6) {
+      if (resetError) resetError.textContent = "Password must be at least 6 characters.";
+      return;
+    }
+    if (next !== confirm) {
+      if (resetError) resetError.textContent = "Passwords do not match.";
+      return;
+    }
+    setBusy(true);
+    try {
+      const { data, error } = await supabaseClient.auth.updateUser({ password: next });
+      if (error) {
+        if (resetError) resetError.textContent = error.message;
+      } else if (resetHint) {
+        resetHint.hidden = false;
+        resetHint.textContent = "Password changed — opening your universe…";
+        // Clear the recovery token from the URL, then enter the universe.
+        try {
+          window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        } catch (e) {}
+        const user = data && data.user ? data.user : null;
+        setTimeout(function () {
+          if (user) showSignedIn(user);
+          else showLogin();
+        }, 1200);
+      }
+    } catch (e) {
+      if (resetError) resetError.textContent = "Password was not changed — please try again.";
+    } finally {
+      setBusy(false);
+    }
   });
 }
 
