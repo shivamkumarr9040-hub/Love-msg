@@ -97,18 +97,149 @@
     </div>
   </section>
 
-  <!-- ============ AFTER LOGIN: FULL PAGE (not inside the phone) ============ -->
-  <section id="welcomeStage" aria-label="Signed in" hidden>
-    <div class="welcome-card">
-      <p class="success-tick" aria-hidden="true">✓</p>
-      <p class="eyebrow">LOVE-MSG</p>
-      <h1>You&rsquo;re signed in</h1>
-      <p class="lede">Welcome cutie, <b id="successEmail"></b></p>
-
-      <button class="btn-dark welcome-btn" id="logoutBtn" type="button">Logout</button>
+  <!-- ============ AFTER LOGIN: PHASE 1 — ENTER THE UNIVERSE ============ -->
+  <section id="welcomeStage" class="cosmic-stage" aria-label="Your universe" hidden>
+    <canvas id="starCanvas" aria-hidden="true"></canvas>
+    <div class="nebula n1" aria-hidden="true"></div>
+    <div class="nebula n2" aria-hidden="true"></div>
+    <div class="nebula n3" aria-hidden="true"></div>
+    <div class="cosmic-content">
+      <div id="cosmicWelcome">
+        <p id="cosmicLine1" class="cosmic-line">Somewhere in this endless universe...</p>
+        <p id="cosmicLine2" class="cosmic-line" hidden>A universe was created just for you. ✨</p>
+        <p id="cosmicLine3" class="cosmic-line cosmic-sub" hidden>Welcome to your little universe.</p>
+        <button id="enterUniverseBtn" class="cosmic-btn" type="button" hidden>ENTER MY UNIVERSE →</button>
+      </div>
+      <div id="cosmicInside" hidden>
+        <h1 class="cosmic-title">Hey, Beautiful! ❤️</h1>
+        <p class="cosmic-text">Out of billions of galaxies, this little universe has something special waiting for you.</p>
+        <p class="cosmic-email">Signed in as <b id="successEmail"></b></p>
+        <button id="exploreGalaxyBtn" class="cosmic-btn" type="button">EXPLORE THE GALAXY →</button>
+      </div>
     </div>
+    <!-- ============ PHASE 2: GALAXY OF SECRETS ============ -->
+    <div id="galaxyScreen" class="cosmic-screen" hidden>
+      <nav class="galaxy-nav">
+        <button id="galaxyBackBtn" class="nav-btn" type="button">← Welcome</button>
+        <p class="nav-progress" id="galaxyProgress">0 / 5 planets · 0 stars</p>
+        <div class="nav-toggles">
+          <button id="galaxyMusicBtn" class="nav-btn" type="button" aria-label="Toggle music">🔇</button>
+          <button id="soundBtn" class="nav-btn" type="button" aria-label="Toggle sound">🔔</button>
+        </div>
+      </nav>
+      <div id="galaxyField" class="galaxy-field"></div>
+      <p class="galaxy-hint">Tap a planet to explore it. Tap a glowing star for a tiny surprise.</p>
+    </div>
+
+    <!-- Planet card (Phase 2) -->
+    <div id="planetCard" class="overlay" hidden>
+      <div class="glass-card">
+        <p class="planet-glyph" id="planetGlyph"></p>
+        <h2 id="planetName"></h2>
+        <p id="planetIntro"></p>
+        <p id="planetText" class="planet-text"></p>
+        <div class="card-actions">
+          <button id="planetEnterBtn" class="cosmic-btn small" type="button">ENTER →</button>
+          <button id="planetBackBtn" class="ghost-btn" type="button">BACK TO GALAXY</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secret star surprise (Phase 2) -->
+    <div id="starModal" class="overlay" hidden>
+      <div class="glass-card small-card">
+        <p class="star-burst" aria-hidden="true">✨</p>
+        <p id="starMessage" class="star-message"></p>
+        <button id="starCloseBtn" class="ghost-btn" type="button">Keep exploring</button>
+      </div>
+    </div>
+
+    <!-- ============ PHASE 3: SECRET MESSAGES ============ -->
+    <div id="lettersScreen" class="cosmic-screen" hidden>
+      <nav class="galaxy-nav">
+        <button id="lettersBackBtn" class="nav-btn" type="button">← Galaxy</button>
+        <p class="nav-progress">Messages From The Universe</p>
+        <div class="nav-toggles">
+          <button id="lettersMusicBtn" class="nav-btn" type="button" aria-label="Toggle music">🔇</button>
+        </div>
+      </nav>
+      <div class="letters-head">
+        <h2>Messages From The Universe</h2>
+        <p>Some feelings are too beautiful to remain unspoken.</p>
+      </div>
+      <div id="envelopeField" class="envelope-field"></div>
+      <button id="playGameBtn" class="cosmic-btn small" type="button">PLAY A LITTLE GAME →</button>
+    </div>
+
+    <!-- Letter reader (Phase 3) -->
+    <div id="letterReader" class="overlay" hidden>
+      <div class="letter-paper">
+        <button id="letterCloseBtn" class="letter-x" type="button" aria-label="Close letter">×</button>
+        <p class="letter-to" id="letterTo"></p>
+        <h2 id="letterTitle"></h2>
+        <div class="reading-bar"><i id="readingFill"></i></div>
+        <p id="letterBody" class="letter-body"></p>
+        <p class="letter-sign" id="letterSign"></p>
+        <div class="card-actions">
+          <button id="discoverBtn" class="cosmic-btn small" type="button">Discover Another Secret ✨</button>
+          <button id="prevLetterBtn" class="ghost-btn" type="button">← Previous letter</button>
+          <button id="nextLetterBtn" class="ghost-btn" type="button">Next letter →</button>
+          <button id="backEnvelopesBtn" class="ghost-btn" type="button">Back to envelopes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ PHASE 4: A LITTLE LOVE GAME ============ -->
+    <div id="gameScreen" class="cosmic-screen" hidden>
+      <div class="game-box">
+        <h2>A Little Game For You ✨</h2>
+        <p class="game-sub">Let&rsquo;s see what your heart chooses.</p>
+        <p class="game-progress" id="gameProgress">1 / 3</p>
+        <div class="game-dots"><i class="on"></i><i></i><i></i></div>
+        <div id="gameQuestion">
+          <h3 id="gameQText"></h3>
+          <div id="gameOptions" class="game-options"></div>
+        </div>
+        <div id="gameDone" hidden>
+          <p class="game-done-text">Every choice creates a little magic. ❤️</p>
+          <p class="game-answers" id="gameAnswers"></p>
+          <button id="revealBtn" class="cosmic-btn" type="button">Reveal My Surprise</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ PHASE 5: THE FINAL SURPRISE ============ -->
+    <div id="finaleScreen" class="cosmic-screen" hidden>
+      <canvas id="finaleCanvas" aria-hidden="true"></canvas>
+      <div class="finale-content">
+        <div id="finaleMsg">
+          <p class="cosmic-line">Out of all the stars in this endless universe...</p>
+          <p class="cosmic-line" id="finaleLine2" hidden>Somehow, you became the brightest one. ❤️</p>
+        </div>
+        <div id="finaleQuestion" hidden>
+          <h2 class="cosmic-title">Will you keep this little universe in your heart?</h2>
+          <div class="card-actions">
+            <button id="yesForeverBtn" class="cosmic-btn" type="button">YES, FOREVER ❤️</button>
+            <button id="alwaysBtn" class="cosmic-btn" type="button">ALWAYS ✨</button>
+          </div>
+        </div>
+        <div id="finaleCelebration" hidden>
+          <p class="heart-galaxy" aria-hidden="true">❤️</p>
+          <h2 class="cosmic-title">Made with a little magic, just for you. 🌌</h2>
+          <p class="cosmic-text">FOR Aashi — with love, Shivam ❤️</p>
+        </div>
+      </div>
+    </div>
+
+    <button id="musicBtn" class="music-btn" type="button" aria-label="Toggle music">🔇</button>
+    <button id="logoutBtn" class="cosmic-logout" type="button">Logout</button>
   </section>
 
+<script src="cosmic.js"></script>
+<script src="galaxy.js"></script>
+<script src="letters.js"></script>
+<script src="game.js"></script>
+<script src="finale.js"></script>
 <script type="module" src="app.js"></script>
 </body>
 </html>

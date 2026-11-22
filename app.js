@@ -74,8 +74,10 @@ function showSignedIn(user) {
   if (loginStage) loginStage.hidden = true;
   if (welcomeStage) welcomeStage.hidden = false;
   if (successEmail) successEmail.textContent = user && user.email ? user.email : "";
+  if (window.startCosmic) window.startCosmic();
 }
 function showLogin() {
+  if (window.stopCosmic) window.stopCosmic();
   if (welcomeStage) welcomeStage.hidden = true;
   if (loginStage) loginStage.hidden = false;
   if (loginView) loginView.hidden = false;
