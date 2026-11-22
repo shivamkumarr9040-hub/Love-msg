@@ -17,28 +17,28 @@
 
   var PLANETS = [
     { id: "memory", name: "MEMORY", glyph: "🪐", color: "#7c3aed", ring: true,
-      intro: "Every little moment we shared still glows here.",
-      text: "Some memories fade. The good ones become stars — and this whole planet is made of them." },
+      intro: "Humari saari chhoti-chhoti yaadein yahin chamakti hain.",
+      text: "Kuch yaadein waqt ke saath feeki pad jaati hain. Par achhi wali taare ban jaati hain — aur ye poora planet unhi se bana hai." },
     { id: "feelings", name: "FEELINGS", glyph: "🌕", color: "#2563eb", ring: false,
-      intro: "Everything I feel, kept safe in one place.",
-      text: "Feelings are hard to say out loud. Here, they orbit quietly — honest, warm, and always true." },
+      intro: "Jo kuch bhi main mehsoos karta hoon, sab yahin sambhal ke rakha hai.",
+      text: "Feelings ko bolna mushkil hota hai. Yahan wo chupchaap ghoomti rehti hain — sachhi, pyaari, aur hamesha apni si." },
     { id: "dreams", name: "DREAMS", glyph: "🌙", color: "#a78bfa", ring: false,
-      intro: "All the little dreams waiting to come true.",
-      text: "Close your eyes and wish. This planet holds every dream I have ever dreamed for us." },
+      intro: "Saare chhote-chhote sapne, jo poore hone ka intezaar kar rahe hain.",
+      text: "Aankhein band karo aur wish maango. Is planet pe humare saare sapne rakhe hain." },
     { id: "secrets", name: "SECRETS", glyph: "✨", color: "#38bdf8", ring: true,
-      intro: "Hidden messages, waiting in the dark.",
-      text: "Five sealed letters float here, each one written only for you. Open them when you are ready." },
+      intro: "Chhupe hue messages, andhere mein tumhara intezaar kar rahe hain.",
+      text: "Yahan paanch band letters tair rahe hain, har ek sirf tumhare liye likha hai. Jab mann kare, khol lena." },
     { id: "forever", name: "FOREVER", glyph: "💜", color: "#c084fc", ring: false,
-      intro: "Some things are not meant to end.",
-      text: "Forever is a big word. But some feelings are bigger — they simply stay." },
+      intro: "Kuch cheezein khatam hone ke liye nahi hoti.",
+      text: "Hamesha bahut bada word hai. Par kuch feelings usse bhi badi hoti hain — wo bas reh jaati hain." },
   ];
   var STAR_SURPRISES = [
-    "You have a smile that could light up this whole galaxy.",
-    "Somewhere out there, a star is named after this moment.",
-    "You are the best surprise this universe ever made.",
-    "Every star you see tonight is cheering for you.",
-    "Keep exploring — the best secret is still ahead.",
-    "You make ordinary days feel like constellations.",
+    "Tumhari smile poori galaxy ko roshan kar sakti hai.",
+    "Kahin na kahin, ek taare ka naam is moment pe rakha gaya hai.",
+    "Tum is universe ka sabse best surprise ho.",
+    "Aaj raat jo bhi taare dikh rahe hain, wo sab tumhare liye khush hain.",
+    "Explore karte raho — sabse best secret abhi baaki hai.",
+    "Tumhare saath normal din bhi taaron jaisa lagta hai.",
   ];
   var STAR_SPOTS = [
     { x: 12, y: 18 }, { x: 78, y: 14 }, { x: 22, y: 72 },
@@ -70,7 +70,7 @@
   }
   function updateProgress() {
     var n = Object.keys(visited).length;
-    if (progressEl) progressEl.textContent = n + " / 5 planets · " + starsFound + " stars";
+    if (progressEl) progressEl.textContent = n + " / 5 planets · " + starsFound + " taare";
   }
   function planetStyle(p, spot) {
     return "left:" + spot.x + "%;top:" + spot.y + "%;width:" + spot.size + "px;height:" + spot.size + "px;" +
@@ -124,7 +124,7 @@
       document.getElementById("planetName").textContent = p.name;
       document.getElementById("planetIntro").textContent = p.intro;
       document.getElementById("planetText").textContent = p.text;
-      document.getElementById("planetEnterBtn").textContent = p.id === "secrets" ? "OPEN THE LETTERS →" : "ENTER →";
+      document.getElementById("planetEnterBtn").textContent = p.id === "secrets" ? "LETTERS KHOLO →" : "ANDAR AAO →";
       if (card) card.hidden = false;
     }, 450);
   }

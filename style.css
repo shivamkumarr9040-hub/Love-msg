@@ -593,3 +593,6 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none!important}
 
 /* hidden must win over display:flex rules above */
 [hidden] { display: none !important; }
+
+/* Letter paper is light — its ghost buttons need a dark readable color */
+.letter-paper .ghost-btn { color: #6d28d9; border-color: rgba(109, 40, 217, 0.45); }

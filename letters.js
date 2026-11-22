@@ -3,37 +3,37 @@
 // message and signature. Nothing personal is hardcoded in the markup.
 var LETTERS = [
   {
-    title: "A Little Hello",
-    to: "Beautiful",
-    body: "Hello. I know this is a small letter, but it carries something big — I was thinking of you, and the whole universe felt a little brighter because of it.",
-    sign: "With love, Shivam",
+    title: "Ek Chhota Sa Hello",
+    to: "Pyaari",
+    body: "Hello. Ye letter chhota sa hai, par isme ek badi si baat chhupi hai — main tumhare baare mein soch raha tha, aur poori duniya thodi aur roshan lagne lagi.",
+    sign: "Tumhara, Shivam",
   },
   {
-    title: "Things I Never Said",
-    to: "Beautiful",
-    body: "There are things I never said out loud, so I wrote them here. You make ordinary days feel special, and you never even have to try.",
-    sign: "With love, Shivam",
+    title: "Kuch Baatein Jo Kabhi Keh Nahi Paaya",
+    to: "Pyaari",
+    body: "Kuch baatein main kabhi bol nahi paaya, isliye yahan likh di. Tumhare saath normal din bhi khaas lagta hai, aur tumhe koshish bhi nahi karni padti.",
+    sign: "Tumhara, Shivam",
   },
   {
-    title: "You Are Special",
-    to: "Beautiful",
-    body: "Out of everyone in this world, you are the one who makes my heart feel at home. Never forget how special you truly are.",
-    sign: "With love, Shivam",
+    title: "Tum Baaki Sabse Alag Ho",
+    to: "Pyaari",
+    body: "Is poori duniya mein sirf tum ho jiske saath dil ko ghar jaisa lagta hai. Kabhi mat bhoolna, tum kitni khaas ho.",
+    sign: "Tumhara, Shivam",
   },
   {
-    title: "A Beautiful Memory",
-    to: "Beautiful",
-    body: "I keep one memory close — the moment everything felt right. Whenever the world feels heavy, I think of it, and it still makes me smile.",
-    sign: "With love, Shivam",
+    title: "Ek Pyaari Si Yaad",
+    to: "Pyaari",
+    body: "Ek yaad main hamesha apne paas rakhta hoon — wo moment jab sab kuch sahi lag raha tha. Jab bhi duniya thodi bhaari lagti hai, usi ke baare mein sochta hoon, aur phir bhi smile aa jaati hai.",
+    sign: "Tumhara, Shivam",
   },
   {
-    title: "One Last Secret",
-    to: "Beautiful",
-    body: "Here is my last secret: no matter where this little universe takes us, I am glad it brought me to you.",
-    sign: "With love, Shivam",
+    title: "Ek Aakhri Secret",
+    to: "Pyaari",
+    body: "Ye mera aakhri secret hai: ye chhoti si duniya hume kahin bhi le jaaye, main khush hoon ki isne mujhe tum tak pahunchaya.",
+    sign: "Tumhara, Shivam",
   },
 ];
-var BONUS_SECRET = "Psst — one more secret: this universe was built with a lot of love, just for you. You found every hidden corner of it. That is the real surprise.";
+var BONUS_SECRET = "Psst — ek aur secret: ye duniya bahut pyaar se banayi gayi thi, sirf tumhare liye. Tumne iska har chhupa hua kona dhoondh liya. Asli surprise to yehi hai.";
 
 (function () {
   var field = document.getElementById("envelopeField");
@@ -76,9 +76,9 @@ var BONUS_SECRET = "Psst — one more secret: this universe was built with a lot
   function openLetter(i, bonus) {
     current = i;
     var L = LETTERS[i];
-    document.getElementById("letterTo").textContent = bonus ? "Just for you" : "For " + L.to + ",";
-    document.getElementById("letterTitle").textContent = bonus ? "One More Secret" : L.title;
-    document.getElementById("letterSign").textContent = bonus ? "— Your universe" : L.sign;
+    document.getElementById("letterTo").textContent = bonus ? "Sirf tumhare liye," : L.to + ",";
+    document.getElementById("letterTitle").textContent = bonus ? "Ek Aur Secret" : L.title;
+    document.getElementById("letterSign").textContent = bonus ? "— Tumhari duniya" : L.sign;
     if (!bonus) { opened[i] = true; saveOpened(); markOpened(); }
     if (window.__cosmic) window.__cosmic.chime();
     if (reader) reader.hidden = false;

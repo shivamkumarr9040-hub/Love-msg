@@ -3,16 +3,16 @@
 (function () {
   var QUESTIONS = [
     {
-      q: "If we could travel anywhere in the universe, where would you go?",
-      options: ["A magical galaxy", "Under the stars", "Somewhere peaceful"],
+      q: "Agar hum universe mein kahin bhi ghoom sakte, to tum kahan jaana chahogi?",
+      options: ["Ek jaadui galaxy", "Taaron ke neeche", "Kahin shaant jagah"],
     },
     {
-      q: "What makes a moment special?",
-      options: ["Beautiful memories", "Unexpected surprises", "Someone's presence"],
+      q: "Ek moment ko khaas kya banata hai?",
+      options: ["Pyaari yaadein", "Achanak milne wale surprises", "Kisi ka saath hona"],
     },
     {
-      q: "Choose your little cosmic gift:",
-      options: ["💌 A Secret Letter", "🌙 A Wish", "⭐ A Surprise"],
+      q: "Apna chhota sa cosmic gift choose karo:",
+      options: ["💌 Ek Secret Letter", "🌙 Ek Wish", "⭐ Ek Surprise"],
     },
   ];
   var answers = [];
