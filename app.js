@@ -12,6 +12,17 @@
 const SUPABASE_URL = "https://lhiedimpadoacapydhik.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_E2oq-uiIqjkcXJZOLuCQtg_hNfoLmb_";
 
+// Live site URL. Reset and Google links must always open the live site:
+// when the site runs on localhost, a link back to localhost breaks as soon
+// as the local server is off (the browser shows "site can't be reached").
+const LIVE_URL = "https://shivamkumarr9040-hub.github.io/Love-msg/";
+function getRedirectUrl() {
+  return window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+    ? LIVE_URL
+    : window.location.origin + window.location.pathname;
+}
+
 const loginError = document.getElementById("loginError");
 const setupHint = document.getElementById("loginSetupHint");
 const loginBtn = document.getElementById("loginBtn");
@@ -57,6 +68,13 @@ const resetHint = document.getElementById("resetHint");
 // True when the page was opened from a password-reset email link.
 // Supabase puts type=recovery in the URL hash for those links.
 const isRecovery = window.location.hash.indexOf("type=recovery") !== -1;
+
+// Secure-account mode: opened from the "Secure your account" link in the
+// password-changed email. Shows the reset-link form with a secure heading
+// and the account email prefilled, so a hacked account can be recovered.
+const secureParams = new URLSearchParams(window.location.search);
+const isSecureMode = secureParams.get("secure") === "1";
+const secureEmail = secureParams.get("email") || "";
 
 const isConfigured =
   SUPABASE_URL &&
@@ -114,7 +132,21 @@ function showForgot() {
   if (resetView) resetView.hidden = true;
   if (forgotError) forgotError.textContent = "";
   if (forgotHint) forgotHint.hidden = true;
+  const forgotHeading = forgotView ? forgotView.querySelector("h2") : null;
+  if (forgotHeading) forgotHeading.textContent = "Forgot password";
+  const forgotSub = forgotView ? forgotView.querySelector(".phone-sub") : null;
+  if (forgotSub) forgotSub.textContent = "Enter your email — we'll send you a link to set a new password.";
   if (forgotEmailInput) forgotEmailInput.focus();
+}
+function showSecure() {
+  // "Secure your account" — the same reset-link form as forgot password,
+  // with a secure heading and the account email prefilled.
+  showForgot();
+  const secureHeading = forgotView ? forgotView.querySelector("h2") : null;
+  if (secureHeading) secureHeading.textContent = "Secure your account";
+  const secureSub = forgotView ? forgotView.querySelector(".phone-sub") : null;
+  if (secureSub) secureSub.textContent = "If you didn't change your password, send yourself a reset link and set a new one.";
+  if (forgotEmailInput && secureEmail) forgotEmailInput.value = secureEmail;
 }
 function showReset() {
   // Set-new-password screen, opened from the reset link in the email.
@@ -153,6 +185,19 @@ function notConfiguredMsg() {
   return "Supabase setup pending — add the Project URL and anon key in app.js first. For Google, enable the Google provider in Supabase.";
 }
 
+// Tell the account owner their password was changed (Edge Function
+// "notify-password-changed" sends the email with a "Secure your account"
+// link). Best-effort: the password is already changed even if the
+// email fails, so this never blocks the UI or throws.
+async function notifyPasswordChanged(email) {
+  if (!email || !supabaseClient || !supabaseClient.functions) return;
+  try {
+    await supabaseClient.functions.invoke("notify-password-changed", {
+      body: { email: email },
+    });
+  } catch (e) {}
+}
+
 async function init() {
   if (!isConfigured) {
     if (setupHint) {
@@ -180,14 +225,16 @@ async function init() {
     // A recovery link signs the user in with a recovery session —
     // show the set-new-password screen instead of the universe.
     if (isRecovery && data && data.session && data.session.user) showReset();
+    else if (isSecureMode) showSecure();
     else if (data && data.session && data.session.user) showSignedIn(data.session.user);
     else showLogin();
   } catch (e) {
-    showLogin();
+    if (isSecureMode) showSecure();
+    else showLogin();
   }
   supabaseClient.auth.onAuthStateChange(function (_event, session) {
-    // While the reset screen is open, don't jump into the universe.
-    if (isRecovery) return;
+    // While the reset or secure screen is open, don't jump into the universe.
+    if (isRecovery || isSecureMode) return;
     if (session && session.user) showSignedIn(session.user);
     else showLogin();
   });
@@ -282,7 +329,7 @@ if (sendResetBtn) {
     setBusy(true);
     try {
       const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + window.location.pathname,
+        redirectTo: getRedirectUrl(),
       });
       if (error) {
         if (forgotError) forgotError.textContent = error.message;
@@ -332,6 +379,9 @@ if (setPasswordBtn) {
           window.history.replaceState(null, "", window.location.pathname + window.location.search);
         } catch (e) {}
         const user = data && data.user ? data.user : null;
+        // Notify the account owner that the password changed, so a
+        // hacked account gets caught. Fire-and-forget, never blocks.
+        if (user && user.email) notifyPasswordChanged(user.email);
         setTimeout(function () {
           if (user) showSignedIn(user);
           else showLogin();
@@ -468,7 +518,7 @@ if (googleBtn) {
       const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: window.location.origin + window.location.pathname,
+          redirectTo: getRedirectUrl(),
         },
       });
       if (error) showError(error.message);
