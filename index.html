@@ -99,6 +99,7 @@
 
   <!-- ============ AFTER LOGIN: PHASE 1 — ENTER THE UNIVERSE ============ -->
   <section id="welcomeStage" class="cosmic-stage" aria-label="Your universe" hidden>
+    <audio id="bgmAudio" src="bgm.mp3" loop preload="auto"></audio>
     <canvas id="starCanvas" aria-hidden="true"></canvas>
     <div class="nebula n1" aria-hidden="true"></div>
     <div class="nebula n2" aria-hidden="true"></div>
@@ -123,7 +124,6 @@
         <button id="galaxyBackBtn" class="nav-btn" type="button">← Welcome</button>
         <p class="nav-progress" id="galaxyProgress">0 / 5 planets · 0 stars</p>
         <div class="nav-toggles">
-          <button id="galaxyMusicBtn" class="nav-btn" type="button" aria-label="Toggle music">🔇</button>
           <button id="soundBtn" class="nav-btn" type="button" aria-label="Toggle sound">🔔</button>
         </div>
       </nav>
@@ -160,7 +160,6 @@
         <button id="lettersBackBtn" class="nav-btn" type="button">← Galaxy</button>
         <p class="nav-progress">Messages From The Universe</p>
         <div class="nav-toggles">
-          <button id="lettersMusicBtn" class="nav-btn" type="button" aria-label="Toggle music">🔇</button>
         </div>
       </nav>
       <div class="letters-head">
@@ -231,7 +230,6 @@
       </div>
     </div>
 
-    <button id="musicBtn" class="music-btn" type="button" aria-label="Toggle music">🔇</button>
     <button id="logoutBtn" class="cosmic-logout" type="button">Logout</button>
   </section>
 

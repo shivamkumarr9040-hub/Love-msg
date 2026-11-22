@@ -11,7 +11,6 @@
   var enterBtn = document.getElementById("enterUniverseBtn");
   var welcome = document.getElementById("cosmicWelcome");
   var inside = document.getElementById("cosmicInside");
-  var musicBtn = document.getElementById("musicBtn");
 
   var ctx = canvas ? canvas.getContext("2d") : null;
   var stars = [];
@@ -115,58 +114,28 @@
     raf = requestAnimationFrame(frame);
   }
 
-  // ---- Ambient music (WebAudio pad, no files) ----
+  // ---- BGM: "Die With A Smile" (bgm.mp3), looped, kept soft on purpose.
+  var BGM_VOLUME = 0.2; // soft background level, never loud
+  var bgmAudio = document.getElementById("bgmAudio");
+  if (bgmAudio) bgmAudio.volume = BGM_VOLUME;
+  // Minimal AudioContext, only for the short UI chime sound.
   function buildPad() {
     if (audioCtx) return;
-    try {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      padGain = audioCtx.createGain();
-      padGain.gain.value = 0;
-      var filter = audioCtx.createBiquadFilter();
-      filter.type = "lowpass"; filter.frequency.value = 900;
-      padGain.connect(filter); filter.connect(audioCtx.destination);
-      var freqs = [110, 164.81, 220, 277.18];
-      freqs.forEach(function (f, idx) {
-        var osc = audioCtx.createOscillator();
-        osc.type = idx % 2 ? "sine" : "triangle";
-        osc.frequency.value = f;
-        osc.detune.value = (idx - 1.5) * 4;
-        var g = audioCtx.createGain();
-        g.gain.value = 0.05;
-        osc.connect(g); g.connect(padGain);
-        osc.start();
-      });
-      var lfo = audioCtx.createOscillator();
-      lfo.frequency.value = 0.07;
-      var lfoGain = audioCtx.createGain();
-      lfoGain.gain.value = 0.02;
-      lfo.connect(lfoGain); lfoGain.connect(padGain.gain);
-      lfo.start();
-    } catch (e) { audioCtx = null; }
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch (e) { audioCtx = null; }
   }
   function setMusic(on) {
     musicOn = on;
     try { localStorage.setItem(MUSIC_KEY, on ? "on" : "off"); } catch (e) {}
-    var label = on ? "🔊" : "🔇";
-    if (musicBtn) musicBtn.textContent = label;
-    ["galaxyMusicBtn", "lettersMusicBtn"].forEach(function (id) {
-      var b = document.getElementById(id);
-      if (b) b.textContent = label;
-    });
-    if (!on || !audioCtx || !padGain) {
-      if (padGain) padGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
-      return;
+    if (!bgmAudio) return;
+    if (on) {
+      bgmAudio.volume = BGM_VOLUME;
+      var played = bgmAudio.play();
+      if (played && played.catch) played.catch(function () {});
+    } else {
+      bgmAudio.pause();
     }
-    if (audioCtx.state === "suspended") audioCtx.resume();
-    padGain.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 2);
   }
-  if (musicBtn) {
-    musicBtn.addEventListener("click", function () {
-      if (!musicOn) buildPad();
-      setMusic(!musicOn);
-    });
-  }
-
   function show(el) { if (el) el.hidden = false; }
   function hide(el) { if (el) el.hidden = true; }
 
@@ -185,11 +154,9 @@
       hide(welcome);
       show(inside);
       inside.classList.add("fade-in");
-      // Music starts only after this tap, and only if the user left it on.
-      var pref = "on";
-      try { pref = localStorage.getItem(MUSIC_KEY) || "on"; } catch (e) {}
-      if (pref !== "off") { buildPad(); setMusic(true); }
-      else setMusic(false);
+      // Music starts automatically with this tap — there is no music
+      // button, so it always plays from here on.
+      buildPad(); setMusic(true);
     });
   }
 
@@ -240,6 +207,12 @@
     },
   };
 
+  // First tap anywhere starts the music automatically (no button).
+  document.addEventListener("pointerdown", function autoMusic() {
+    var stage = document.getElementById("welcomeStage");
+    if (stage && !stage.hidden && !musicOn) { buildPad(); setMusic(true); }
+  });
+
   window.startCosmic = function () {
     if (!stage || !canvas) return;
     resize();
@@ -248,10 +221,6 @@
       running = true;
       raf = requestAnimationFrame(frame);
     }
-    try {
-      var pref = localStorage.getItem(MUSIC_KEY) || "on";
-      if (musicBtn) musicBtn.textContent = pref === "off" ? "🔇" : "🔇";
-    } catch (e) {}
   };
   window.stopCosmic = function () {
     running = false;
@@ -259,6 +228,7 @@
     timers.forEach(clearTimeout);
     timers = [];
     if (musicOn) setMusic(false);
+    if (bgmAudio) bgmAudio.pause();
     if (audioCtx) { try { audioCtx.close(); } catch (e) {} audioCtx = null; padGain = null; }
   };
 })();

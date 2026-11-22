@@ -9,8 +9,6 @@
       var el = document.getElementById(s);
       if (el) el.hidden = (s !== id);
     });
-    var musicBtn = document.getElementById("musicBtn");
-    if (musicBtn) musicBtn.hidden = (id === "galaxyScreen" || id === "lettersScreen");
     var logoutBtn = document.getElementById("logoutBtn");
     if (logoutBtn) logoutBtn.hidden = (id === "galaxyScreen" || id === "lettersScreen" || id === "gameScreen" || id === "finaleScreen");
   };
@@ -172,19 +170,6 @@
       window.showCosmicScreen("cosmicInside");
     });
   }
-  function syncMusicButtons() {
-    if (!window.__cosmic) return;
-    ["galaxyMusicBtn", "lettersMusicBtn"].forEach(function (id) {
-      var b = document.getElementById(id);
-      if (b) b.textContent = window.__cosmic.isMusicOn() ? "🔊" : "🔇";
-    });
-  }
-  ["galaxyMusicBtn", "lettersMusicBtn"].forEach(function (id) {
-    var b = document.getElementById(id);
-    if (b) b.addEventListener("click", function () {
-      if (window.__cosmic) { window.__cosmic.toggleMusic(); syncMusicButtons(); }
-    });
-  });
   var soundBtn = document.getElementById("soundBtn");
   if (soundBtn) {
     if (window.__cosmic) soundBtn.textContent = window.__cosmic.soundOn() ? "🔔" : "🔕";
