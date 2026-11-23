@@ -1,0 +1,184 @@
+/* Love-msg — premium romantic animations (additive layer).
+   Nothing here changes any page or screen background, any layout,
+   or any message. Only animation elements: hearts, petals, sparkles,
+   glows and transitions. All motion is transform/opacity only. */
+
+:root { --fx-spring: cubic-bezier(.22, 1, .36, 1); }
+
+/* ---------- 1. Floating pink hearts (background layer) ---------- */
+.fx-hearts {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+#loginStage .fx-hearts { z-index: -1; }
+#welcomeStage .fx-hearts { z-index: 1; }
+.fx-heart {
+  position: absolute;
+  bottom: -44px;
+  animation: heartRise linear infinite;
+  will-change: transform;
+  text-shadow: 0 0 12px rgba(255, 77, 109, 0.45);
+}
+@keyframes heartRise {
+  0% { transform: translate(0, 0) rotate(-8deg); }
+  50% { transform: translate(16px, -55vh) rotate(7deg); }
+  100% { transform: translate(-12px, -112vh) rotate(-6deg); }
+}
+
+/* ---------- 2. Envelope opening (flap lift + letter slip) ---------- */
+.envelope { position: relative; }
+.envelope::after {
+  content: "";
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  top: 10px;
+  height: 30px;
+  background: linear-gradient(180deg, #fffdf5, #ffe4ec);
+  border-radius: 6px 6px 0 0;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  pointer-events: none;
+}
+.envelope.opening { animation: envOpen 0.55s ease both; }
+.envelope.opening::after { opacity: 1; transform: translateY(-14px); }
+.envelope.opening .env-icon { animation: envIconFly 0.55s ease both; }
+@keyframes envOpen {
+  0% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(-10px) scale(1.05); }
+  100% { transform: translateY(0) scale(1); }
+}
+@keyframes envIconFly {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(-8deg) scale(1.12); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+/* Cute touch: the envelope icon lifts a little on hover. */
+.envelope .env-icon { transition: transform 0.3s ease; }
+.envelope:hover .env-icon { transform: translateY(-4px) rotate(-5deg); }
+/* Staggered entrance for the envelopes when the letters screen opens. */
+.envelopes-in .envelope { animation: envEnter 0.6s ease both, envelopeFloat 5s ease-in-out infinite; }
+.envelopes-in .envelope:nth-child(1) { animation-delay: 0s, 0s; }
+.envelopes-in .envelope:nth-child(2) { animation-delay: 0.08s, -1s; }
+.envelopes-in .envelope:nth-child(3) { animation-delay: 0.16s, -2.5s; }
+.envelopes-in .envelope:nth-child(4) { animation-delay: 0.24s, -0.6s; }
+.envelopes-in .envelope:nth-child(5) { animation-delay: 0.32s, -3.4s; }
+@keyframes envEnter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---------- 3. Word-by-word typing (letter body) ---------- */
+.letter-body .w {
+  display: inline-block;
+  animation: wordIn 0.3s ease both;
+}
+@keyframes wordIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- 4. Falling rose petals (canvas layer) ---------- */
+.fx-petals {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ---------- 5. Tiny glowing sparkles following the cursor ---------- */
+.fx-sparkles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 90;
+  overflow: hidden;
+}
+.fx-sparkle {
+  position: absolute;
+  animation: sparklePop 0.9s ease-out forwards;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+  will-change: transform, opacity;
+}
+@keyframes sparklePop {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3) rotate(0deg); }
+  35% { opacity: 1; transform: translate(-50%, -60%) scale(1) rotate(40deg); }
+  100% { opacity: 0; transform: translate(-50%, -140%) scale(0.2) rotate(90deg); }
+}
+
+/* ---------- 6. Heartbeat (fixes the missing keyframes) ---------- */
+/* style.css already animates .heart-galaxy with `heartbeat`, but the
+   keyframes were never defined, so the heart never beat. Defined here. */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.14); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.1); }
+  60% { transform: scale(1); }
+}
+/* Cute touch: the planet glyph in the glass card bobs gently. */
+.planet-glyph { animation: glyphBob 3s ease-in-out infinite; }
+@keyframes glyphBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ---------- 7. Surprise burst (hearts + glitter) ---------- */
+.fx-burst {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 95;
+  overflow: hidden;
+}
+.fx-burst-heart,
+.fx-burst-dot {
+  position: absolute;
+  animation: burstFly 1s cubic-bezier(0.17, 0.67, 0.35, 1) forwards;
+  will-change: transform, opacity;
+}
+.fx-burst-heart { text-shadow: 0 0 10px rgba(255, 77, 109, 0.7); }
+@keyframes burstFly {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(0.4); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.1) rotate(40deg); }
+}
+
+/* ---------- 8. Fade-in + slide-up on scroll ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s ease, transform 0.7s var(--fx-spring);
+}
+.reveal.in-view { opacity: 1; transform: translateY(0); }
+
+/* ---------- 9. Subtle glow on important buttons ---------- */
+.glow-pulse { animation: glowPulse 3.4s ease-in-out infinite; }
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 22px rgba(167, 139, 250, 0.45); }
+  50% { box-shadow: 0 0 46px rgba(167, 139, 250, 0.8); }
+}
+.btn-dark.glow-pulse { animation-name: glowPulsePink; }
+@keyframes glowPulsePink {
+  0%, 100% { box-shadow: 0 0 14px rgba(233, 30, 99, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(233, 30, 99, 0.55); }
+}
+
+/* ---------- Reduced motion: everything calms down ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .fx-hearts,
+  .fx-petals,
+  .fx-sparkles,
+  .fx-burst { display: none !important; }
+  .glow-pulse,
+  .heart-galaxy,
+  .planet-glyph,
+  .envelope.opening,
+  .envelope.opening .env-icon { animation: none !important; }
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .letter-body .w { animation: none !important; }
+}

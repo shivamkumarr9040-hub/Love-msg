@@ -63,26 +63,52 @@ var BONUS_SECRET = "Psst — one more secret: this universe was built with a lot
     });
   }
   function typeText(text) {
+    // Word-by-word reveal: each word fades in softly, and the reading
+    // bar fills as the words appear.
     clearInterval(typingTimer);
     bodyEl.textContent = "";
-    var i = 0;
+    var words = text.split(/\s+/).filter(function (w) { return w.length; });
+    var wi = 0;
+    if (fillEl) fillEl.style.width = "0%";
+    if (!words.length) return;
     typingTimer = setInterval(function () {
-      i += 2;
-      bodyEl.textContent = text.slice(0, i);
-      if (fillEl) fillEl.style.width = Math.min(100, (i / text.length) * 100) + "%";
-      if (i >= text.length) clearInterval(typingTimer);
-    }, 24);
+      var span = document.createElement("span");
+      span.className = "w";
+      span.textContent = words[wi];
+      bodyEl.appendChild(span);
+      bodyEl.appendChild(document.createTextNode(" "));
+      wi += 1;
+      if (fillEl) fillEl.style.width = Math.min(100, (wi / words.length) * 100) + "%";
+      if (wi >= words.length) clearInterval(typingTimer);
+    }, 100);
   }
+  var revealTimer = 0;
   function openLetter(i, bonus) {
     current = i;
     var L = LETTERS[i];
+    clearTimeout(revealTimer);
     document.getElementById("letterTo").textContent = bonus ? "Just for you" : "For " + L.to + ",";
     document.getElementById("letterTitle").textContent = bonus ? "One More Secret" : L.title;
     document.getElementById("letterSign").textContent = bonus ? "— Your universe" : L.sign;
     if (!bonus) { opened[i] = true; saveOpened(); markOpened(); }
     if (window.__cosmic) window.__cosmic.chime();
-    if (reader) reader.hidden = false;
-    typeText(bonus ? BONUS_SECRET : L.body);
+    // Envelope opening animation: when the reader is closed, the tapped
+    // envelope lifts and a paper slip slides out before the letter opens.
+    var fromGrid = reader && reader.hidden && field && field.children[i];
+    var reduced = false;
+    try { reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+    if (fromGrid && !reduced) {
+      var envEl = field.children[i];
+      envEl.classList.add("opening");
+      setTimeout(function () { envEl.classList.remove("opening"); }, 750);
+      revealTimer = setTimeout(function () {
+        if (reader) reader.hidden = false;
+        typeText(bonus ? BONUS_SECRET : L.body);
+      }, 460);
+    } else {
+      if (reader) reader.hidden = false;
+      typeText(bonus ? BONUS_SECRET : L.body);
+    }
   }
   function markOpened() {
     if (!field) return;
@@ -103,6 +129,7 @@ var BONUS_SECRET = "Psst — one more secret: this universe was built with a lot
   };
   function closeReader() {
     clearInterval(typingTimer);
+    clearTimeout(revealTimer);
     if (reader) reader.hidden = true;
   }
   var closeBtn = document.getElementById("letterCloseBtn");
